@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
+  "ignoreCommand": "echo 'Lint skipped by vercel.json'",
+  "env": {
+    "DATABASE_URL": "@DATABASE_URL"
+  }
+}
