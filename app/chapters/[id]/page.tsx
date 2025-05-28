@@ -28,13 +28,7 @@ const getDocuments = async () => {
   return await prisma.document.findMany();
 };
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function ChapterPage ({params}: PageProps) {
+export default async function Page ({ params }: { params: { id: string } }) {
   const documentId = Number(params.id);
 
   const [chapters, documents] = await Promise.all([
@@ -42,7 +36,5 @@ export default async function ChapterPage ({params}: PageProps) {
     getDocuments(),
   ]);
 
-  return (
-    <ChapterClient chapters={chapters} documents={documents}/>
-  );
-};
+  return <ChapterClient chapters={chapters} documents={documents} />;
+}
