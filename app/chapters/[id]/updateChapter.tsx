@@ -1,5 +1,5 @@
 "use client";
-import { SyntheticEvent, use, useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import type { Document } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import AddChapter from "./addChapter";
 import DeleteChapter from './deleteChapter';
 import UpdateChapter from './updateChapter';
+import Link from 'next/link';
 
 type Chapter = {
   id: number;
@@ -16,6 +17,7 @@ type Chapter = {
 type Document = {
   id: number;
   name: string;
+  alias: string | null;
 };
 
 export default function ChapterClient ({chapters, documents}: {chapters: Chapter[]; documents: Document[]}) {
@@ -28,7 +30,9 @@ export default function ChapterClient ({chapters, documents}: {chapters: Chapter
   return (
     <div>
         <div className="mb-5 w-full flex">
-            <div className="rounded-box grid grow place-items-start"><a className='btn' href='/'>Back</a></div>
+            <div className="rounded-box grid grow place-items-start">
+                <Link className='btn' href='/'>Back</Link>
+            </div>
             <div className='rounded-box grid grow place-items-end content-center'>
                 <label className='label'>
                     User Mode                    
@@ -47,7 +51,7 @@ export default function ChapterClient ({chapters, documents}: {chapters: Chapter
                 </div>
                 <div className='ordered-list list-none'>
                     <ol className='list-decimal list-outside pl-5'>
-                        {filteredChapters.map((chapter, index) => (
+                        {filteredChapters.map((chapter,index) => (
                         <li key={chapter.id} className='mb-2'>
                             <a href={`/${chapter.filePath}`} 
                             target='_blank' rel='noopener noreferrer' 

@@ -75,7 +75,7 @@ export const PATCH = async (request: Request, {params}: {params: {id: string}}) 
 export const DELETE = async (_req: Request, {params}: {params: {id: string}}) => {
     const chapter = Number(params.id);
     // Get the existing chapter to check if it has a filePath
-    try {
+
         const existingChapter = await prisma.chapter.findUnique({
             where: {
                 id: chapter,
@@ -99,8 +99,4 @@ export const DELETE = async (_req: Request, {params}: {params: {id: string}}) =>
             },
         });
         return NextResponse.json(chapter, { status: 200 });
-
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to delete chapter' }, { status: 500 });
-    }   
 }

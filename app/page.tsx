@@ -1,6 +1,6 @@
 import './globals.css';
 import { PrismaClient } from '@prisma/client';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,14 @@ const Homepage = async() => {
       <div className='absolute inset-0 bg-white bg-opacity-80 z-0'/>
       <div className='relative z-10'>
         <div className='text-center mb-10 mt-10'>
-          <img src="/Logo.png" alt="Boeing 737" className='w-60 mx-auto h-auto mb-4' />
+          <Image
+            src="/Logo.png"
+            alt="Boeing 737"
+            width={240} // atur lebar sesuai kebutuhan
+            height={150} // atur tinggi sesuai kebutuhan
+            className="mx-auto mb-4"
+          />
+          {/* <img src="/Logo.png" alt="Boeing 737" className='w-60 mx-auto h-auto mb-4' /> */}
           <div className='text-center text-3xl font-bold mb-10 text-blue-950'>Boeing-737</div>
         </div>
         <div className="flex items-center justify-center">
