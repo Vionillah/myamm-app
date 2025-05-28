@@ -1,8 +1,6 @@
 import './globals.css';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
-
-const prisma = new PrismaClient();
 
 const Homepage = async() => {
   const documents = await prisma.document.findMany();
