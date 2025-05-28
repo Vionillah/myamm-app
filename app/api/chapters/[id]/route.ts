@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import path from 'path'; // Masih berguna untuk mengekstrak nama file dari URL
+import { prisma } from '@/lib/prisma';
 import { supabase } from '@/lib/supabase'; // Import Supabase client yang sudah kita buat
 
-const prisma = new PrismaClient();
 const BUCKET_NAME = 'uploads'; // Pastikan ini sesuai dengan nama bucket Anda di Supabase
 
 export const PATCH = async (req: NextRequest, { params }: { params: { id: string } }) => {
