@@ -20,7 +20,7 @@ export const POST = async (request: NextRequest) => {
 
     // Upload file ke Supabase Storage
     const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`; // Buat nama unik dan aman
-    const filePathInBucket = `uploads/${fileName}`; // Path dalam bucket
+    const filePathInBucket = fileName; // Path dalam bucket
 
     console.log(`Attempting to upload new file to Supabase Storage: ${filePathInBucket}`);
     const { data, error: uploadError } = await supabase.storage

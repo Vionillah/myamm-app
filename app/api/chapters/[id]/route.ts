@@ -56,7 +56,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
 
       // 3. Upload file baru ke Supabase Storage
       const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`; // Buat nama unik dan aman
-      const filePathInBucket = `uploads/${fileName}`; // Path dalam bucket, Anda bisa sesuaikan
+      const filePathInBucket = fileName; // Path dalam bucket, Anda bisa sesuaikan
 
       console.log(`Attempting to upload new file to Supabase Storage: ${filePathInBucket}`);
       const { data, error: uploadError } = await supabase.storage
