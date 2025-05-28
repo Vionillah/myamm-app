@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-plane {
+    background-image: url('/Bg-plane.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* opacity: 0.15; */
+}
