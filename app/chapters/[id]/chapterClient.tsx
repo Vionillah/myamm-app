@@ -51,7 +51,7 @@ export default function ChapterClient ({chapters, documents}: {chapters: Chapter
                 </div>
                 <div className='ordered-list list-none'>
                     <ol className='list-decimal list-outside pl-5'>
-                        {filteredChapters.map((chapter,index) => (
+                        {filteredChapters.map((chapter) => (
                         <li key={chapter.id} className='mb-2'>
                             <a href={`/${chapter.filePath}`} 
                             target='_blank' rel='noopener noreferrer' 
