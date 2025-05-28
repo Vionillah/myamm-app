@@ -6,15 +6,14 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
-// Definisikan interface untuk route parameters (params)
-// Ini adalah cara yang benar untuk mendapatkan dynamic segments
-interface RouteParams {
-  params: {
-    id: string; // [id] akan tersedia sebagai 'id' di objek params
-  };
-}
+// Hapus atau komen out interface RouteParams
+// interface RouteParams {
+//   params: {
+//     id: string;
+//   };
+// }
 
-export const PATCH = async (req: NextRequest, { params }: RouteParams) => {
+export const PATCH = async (req: NextRequest, { params }: { params: { id: string } }) => { // Tipe inline di sini
   try {
     const { id } = params; // Dapatkan 'id' dari params yang disalurkan Next.js
     const chapter = Number(id);
@@ -35,8 +34,7 @@ export const PATCH = async (req: NextRequest, { params }: RouteParams) => {
 
     let filePath: string | undefined = undefined;
 
-    if (file && file.size > 0) { // Tambahkan file.size > 0 untuk memastikan file tidak kosong
-      // Get the existing chapter to check if it has a filePath
+    if (file && file.size > 0) {
       const existingChapter = await prisma.chapter.findUnique({
         where: {
           id: chapter,
@@ -46,7 +44,6 @@ export const PATCH = async (req: NextRequest, { params }: RouteParams) => {
         },
       });
 
-      // Delete the existing file if it exists
       if (existingChapter?.filePath) {
         const oldPath = path.join(process.cwd(), 'public', existingChapter.filePath);
         if (existsSync(oldPath)) {
@@ -54,7 +51,6 @@ export const PATCH = async (req: NextRequest, { params }: RouteParams) => {
             unlinkSync(oldPath);
           } catch (unlinkError) {
             console.error(`Failed to delete old file ${oldPath}:`, unlinkError);
-            // Anda bisa memilih untuk mengabaikan error ini atau mengembalikannya sebagai 500
           }
         }
       }
@@ -75,7 +71,7 @@ export const PATCH = async (req: NextRequest, { params }: RouteParams) => {
       data: {
         name,
         documentId,
-        ...(filePath ? { filePath } : {}), // Only update filePath if it exists
+        ...(filePath ? { filePath } : {}),
       },
     });
 
@@ -86,15 +82,14 @@ export const PATCH = async (req: NextRequest, { params }: RouteParams) => {
   }
 };
 
-export const DELETE = async (req: NextRequest, { params }: RouteParams) => {
+export const DELETE = async (req: NextRequest, { params }: { params: { id: string } }) => { // Tipe inline di sini
   try {
-    const { id } = params; // Dapatkan 'id' dari params yang disalurkan Next.js
+    const { id } = params;
     const chapter = Number(id);
 
     if (isNaN(chapter)) {
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
-
     const existingChapter = await prisma.chapter.findUnique({
       where: {
         id: chapter,
@@ -104,7 +99,6 @@ export const DELETE = async (req: NextRequest, { params }: RouteParams) => {
       },
     });
 
-    // Delete the existing file if it exists
     if (existingChapter?.filePath) {
       const oldPath = path.join(process.cwd(), 'public', existingChapter.filePath);
       if (existsSync(oldPath)) {
@@ -112,7 +106,6 @@ export const DELETE = async (req: NextRequest, { params }: RouteParams) => {
           unlinkSync(oldPath);
         } catch (unlinkError) {
           console.error(`Failed to delete old file ${oldPath} during DELETE:`, unlinkError);
-          // Anda bisa memilih untuk mengabaikan error ini atau mengembalikannya sebagai 500
         }
       }
     }
@@ -122,7 +115,7 @@ export const DELETE = async (req: NextRequest, { params }: RouteParams) => {
         id: chapter,
       },
     });
-    return NextResponse.json({ message: `Chapter with ID ${id} deleted successfully` }, { status: 200 }); // Mengembalikan objek, bukan hanya ID
+    return NextResponse.json({ message: `Chapter with ID ${id} deleted successfully` }, { status: 200 });
   } catch (error) {
     console.error('Error in DELETE handler:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
