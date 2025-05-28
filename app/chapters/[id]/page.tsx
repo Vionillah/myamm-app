@@ -28,7 +28,13 @@ const getDocuments = async () => {
   return await prisma.document.findMany();
 };
 
-export default async function Page ({ params }: { params: { id: string } }) {
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function Page({ params }: Params) {
   const documentId = Number(params.id);
 
   const [chapters, documents] = await Promise.all([
