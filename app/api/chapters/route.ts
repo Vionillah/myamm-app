@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
@@ -6,7 +6,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const POST = async (request: Request) => {
+export const POST = async (request: NextRequest) => {
     const formData = await request.formData();
 
     const name = formData.get('name') as string;

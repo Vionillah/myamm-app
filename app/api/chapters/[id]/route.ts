@@ -1,14 +1,22 @@
 import { unlinkSync, existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import path from 'path';
 // import type { Chapter } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const PATCH = async (request: Request, {params}: {params: {id: string}}) => {
-    const formData = await request.formData();
+export const PATCH = async (req: NextRequest) => {
+    const url   = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+    const chapter = Number(id);
+
+    if (isNaN(chapter)) {
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+  }
+    
+    const formData = await req.formData();
     
     const name = formData.get('name') as string;
     const file = formData.get('file') as File; 
@@ -24,7 +32,7 @@ export const PATCH = async (request: Request, {params}: {params: {id: string}}) 
         //Get the existing chapter to check if it has a filePath
         const existingChapter = await prisma.chapter.findUnique({
             where: {
-                id: Number(params.id),
+                id: chapter,
             },
             select: {
                 filePath: true,
@@ -48,9 +56,9 @@ export const PATCH = async (request: Request, {params}: {params: {id: string}}) 
         await writeFile(fullPath, buffer);
     }
     
-    const chapter = await prisma.chapter.update({
+    const updatedChapter = await prisma.chapter.update({
         where: {
-            id: Number(params.id),
+            id: chapter,
         },
         data: {
             name,
@@ -58,32 +66,27 @@ export const PATCH = async (request: Request, {params}: {params: {id: string}}) 
             ...(filePath ? { filePath } : {}), // Only update filePath if it exists
         },
     });
-    // const body: Chapter = await request.json();
-    // const chapter = await prisma.chapter.update({
-    //     where:{
-    //         id: Number(params.id)
-    //     },
-    //     data: {
-    //         name: body.name,
-    //         filePath: body.filePath, // Ensure filePath is provided in the request body
-    //         documentId: body.documentId // Ensure documentId is provided in the request body
-    //     }
-    // });
-    return NextResponse.json(chapter, { status: 200 });
+    
+    return NextResponse.json(updatedChapter, { status: 200 });
 }
 
-export const DELETE = async (_req: Request, {params}: {params: {id: string}}) => {
-    const chapter = Number(params.id);
+export const DELETE = async (req: NextRequest) => {
+    const url   = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+    const chapter = Number(id);
     // Get the existing chapter to check if it has a filePath
 
-        const existingChapter = await prisma.chapter.findUnique({
-            where: {
-                id: chapter,
-            },
-            select: {
-                filePath: true,
-            },
-        });
+    if (isNaN(chapter)) {
+        return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    }
+    const existingChapter = await prisma.chapter.findUnique({
+        where: {
+            id: chapter,
+        },
+        select: {
+            filePath: true,
+        },
+    });
 
         // Delete the existing file if it exists
         if (existingChapter?.filePath) {
