@@ -127,21 +127,34 @@ export const DELETE = async (req: NextRequest, { params }: { params: { id: strin
     });
 
     // 2. Hapus file terkait dari Supabase Storage jika itu adalah URL Supabase
-    if (existingChapter?.filePath && existingChapter.filePath.startsWith(`https://${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]}/storage/v1/object/public/${BUCKET_NAME}/`)) {
-        const oldFilePath = existingChapter.filePath;
-        const oldFileSubPath = oldFilePath.split(`${BUCKET_NAME}/`)[1]; 
+    if (!existingChapter) {
+      return NextResponse.json({message : 'Chapter not found'}, {status: 404});
+    }
 
-        console.log(`Attempting to delete file from Supabase Storage during DELETE: ${oldFileSubPath}`);
-        const { error: deleteError } = await supabase.storage
-          .from(BUCKET_NAME)
-          .remove([oldFileSubPath]);
+    const fileUrl = existingChapter.filePath;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const expectedPrefix = `${supabaseUrl}/storage/v1/object/public/${BUCKET_NAME}/`;
+    if(fileUrl && fileUrl.startsWith(expectedPrefix)){
+        
+        const oldFileSubPath = fileUrl.substring(expectedPrefix.length);
 
-        if (deleteError) {
-          console.error(`Failed to delete file ${oldFileSubPath} from Supabase Storage during DELETE:`, deleteError);
-          // Lanjutkan proses meskipun gagal menghapus file, agar chapter tetap bisa dihapus
+        if(oldFileSubPath){
+          console.log(`Attempting to delete file from Supabase Storage during DELETE: ${oldFileSubPath}`);
+          const { error: deleteError } = await supabase.storage
+            .from(BUCKET_NAME)
+            .remove([oldFileSubPath]);
+  
+          if (deleteError) {
+            console.error(`Failed to delete file ${oldFileSubPath} from Supabase Storage during DELETE:`, deleteError);
+            // Lanjutkan proses meskipun gagal menghapus file, agar chapter tetap bisa dihapus
+          } else {
+            console.log(`File deleted from Supabase Storage during DELETE: ${oldFileSubPath}`);
+          }
         } else {
-          console.log(`File deleted from Supabase Storage during DELETE: ${oldFileSubPath}`);
+          console.warn(`File path seems to be a Supabase URL, but sub-path extraction failed: ${fileUrl}`);
         }
+    } else {
+      console.log(`File path is not a Supabase Storage URL or missing: ${fileUrl}. Skipping file deletion`);
     }
 
     // 3. Hapus chapter dari database
@@ -153,8 +166,6 @@ export const DELETE = async (req: NextRequest, { params }: { params: { id: strin
     console.error('Error in DELETE handler:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   } finally {
-    // if (process.env.NODE_ENV === 'production') {
-    //   await prisma.$disconnect();
-    // }
+    
   }
 };
