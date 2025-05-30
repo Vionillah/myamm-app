@@ -22,6 +22,7 @@ const DeleteChapter = ({chapter} : {chapter: Chapter}) => {
             console.log('Chapter deleted successfully')
             setIsOpen(false);        
             router.refresh();
+            alert('Chapter deleted successfully')
         } catch (error) {
             console.error('Error deleting chapter:', error);
             alert('Failed to delete chapter: ' + (axios.isAxiosError(error) ? error.response?.data?.message || error.message : ''));
