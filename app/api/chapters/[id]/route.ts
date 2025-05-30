@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { supabase } from '@/lib/supabase'; // Import Supabase client yang sudah kita buat
+import { createClient } from '@/lib/supabase'; // Import Supabase client yang sudah kita buat
 
 const BUCKET_NAME = 'uploads'; // Pastikan ini sesuai dengan nama bucket Anda di Supabase
 
 export const PATCH = async (req: NextRequest, { params }: { params: { id: string } }) => {
+  const supabase = createClient();
   try {
     const { id } = params;
     const chapterId = Number(id);
@@ -109,6 +110,8 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
 };
 
 export const DELETE = async (req: NextRequest, { params }: { params: { id: string } }) => {
+  const supabase = createClient();
+  
   try {
     const { id } = params;
     const chapterId = Number(id);

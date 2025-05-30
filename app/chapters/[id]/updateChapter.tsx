@@ -16,43 +16,45 @@ const UpdateChapter = ({documents, chapter} : {documents: Document[]; chapter: C
     const [filePath, setFilePath] = useState<File | null>(null);
     const [document, setDocument] = useState(chapter.documentId);
     const [isOpen, setIsOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter();
 
     const handleUpdate = async (e: SyntheticEvent) => {
         e.preventDefault();
+        setLoading(true);
 
         const formData = new FormData();
         formData.append('name', chapterName);
         formData.append('documentId', String(document));
+        
         if (filePath instanceof File) {
             formData.append('file', filePath);
         }
-        await axios.patch(`/api/chapters/${chapter.id}`, formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            }
-        );
-        router.refresh();
-        setIsOpen(false);
-        alert('Chapter updated successfully');
-        
-
-        // await axios.patch(`/api/chapters/${chapter.id}`, {
-        //     name: chapterName,
-        //     filePath: filePath,
-        //     documentId: Number(document)
-        // });
-        
-        // router.refresh();
-        // setIsOpen(false);
-        // alert('Chapter added successfully');
+        try {
+            await axios.patch(`/api/chapters/${chapter.id}`, formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+            router.refresh();
+            setIsOpen(false);
+            alert('Chapter updated successfully');
+        } catch (error) {
+            console.error('Error updating chapter:', error);
+            alert('Failed to update chapter');
+        } finally {
+            setLoading(false);
+        }
     }
 
     const openModal = () => {
         setIsOpen(!isOpen);
+        if (!isOpen){
+            setFilePath(null);
+        }
     };
 
     return (
@@ -87,7 +89,16 @@ const UpdateChapter = ({documents, chapter} : {documents: Document[]; chapter: C
                     </div>
                     <div className="modal-action">
                         <button type="button" className="btn btn-ghost" onClick={openModal}>Close</button>
-                        <button type="submit" className="btn btn-primary">Update</button>
+                           <button type="submit" className={`btn btn-primary ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={loading}> {/* <--- Tambahkan kelas dan disabled */}
+                            {loading ? ( // <--- Conditional rendering untuk loading spinner
+                                <>
+                                    <span className="loading loading-spinner"></span>
+                                    Processing...
+                                </>
+                            ) : (
+                                'Update'
+                            )}
+                        </button>
                     </div>
                 </form>
             </div>

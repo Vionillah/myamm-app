@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { supabase } from '@/lib/supabase'; // Import Supabase client
+import { createClient } from '@/lib/supabase';
 
 const BUCKET_NAME = 'uploads'; // Pastikan ini sesuai dengan nama bucket Anda di Supabase
 
 export const POST = async (request: NextRequest) => {
+  const supabase = createClient();
   try {
     const formData = await request.formData();
 

@@ -12,13 +12,22 @@ type Chapter = {
 
 const DeleteChapter = ({chapter} : {chapter: Chapter}) => {
     const [isOpen, setIsOpen] = useState(false);
-
+    const [loading, setLoading] = useState(false); // State untuk loadin
     const router = useRouter();
 
     const handleDelete = async (chapterId: number) => {
-        await axios.delete(`/api/chapters/${chapterId}`)
-        router.refresh();
-        setIsOpen(false);        
+        setLoading(true);
+        try {
+            await axios.delete(`/api/chapters/${chapterId}`)
+            console.log('Chapter deleted successfully')
+            setIsOpen(false);        
+            router.refresh();
+        } catch (error) {
+            console.error('Error deleting chapter:', error);
+            alert('Failed to delete chapter: ' + (axios.isAxiosError(error) ? error.response?.data?.message || error.message : ''));
+        } finally {
+            setLoading(false);
+        }
     }
 
     const openModal = () => {
@@ -33,7 +42,16 @@ const DeleteChapter = ({chapter} : {chapter: Chapter}) => {
                 <h3 className="font-bold text-lg">Are you sure to delete {chapter.name}?</h3>
                 <div className="modal-action">
                     <button type="button" className="btn" onClick={openModal}>No</button>
-                    <button type="submit" onClick={()=>handleDelete(chapter.id)} className="btn btn-primary">Yes</button>
+                    <button type="submit" onClick={()=>handleDelete(chapter.id)} className={`btn btn-error ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={loading}>
+                        {loading ? (
+                            <>
+                            <span className="loading loading-spinner"></span>
+                            Deleting...
+                            </>
+                        ) : (
+                            'Yes'
+                        )}
+                    </button>
                 </div>
             </div>
         </div>

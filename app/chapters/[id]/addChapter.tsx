@@ -9,6 +9,7 @@ const AddChapter = ({documents} : {documents: Document[]}) => {
     const [filePath, setFilePath] = useState<File| null>(null);
     const [document, setDocument] = useState('');
     const [isOpen, setIsOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter();
 
@@ -20,9 +21,11 @@ const AddChapter = ({documents} : {documents: Document[]}) => {
 
     const handleSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
+        setLoading(true);
         
         if (!chapterName || !filePath || !document) {
             alert('Please fill all fields');
+            setLoading(false);
             return;
         }
 
@@ -43,24 +46,18 @@ const AddChapter = ({documents} : {documents: Document[]}) => {
             console.error('Error adding chapter:', error);
             alert('Failed to add chapter');
             return;
+        } finally {
+            setLoading(false);
         }
-
-        //  await axios.post('/api/chapters', {
-        //     name: chapterName,
-        //     filePath: filePath,
-        //     documentId: Number(document)
-        // });
-
-        // setChapterName('');
-        // setFilePath(null);
-        // setDocument('');
-        // router.refresh();
-        // setIsOpen(false);
-        // alert('Chapter added successfully');
     }
 
     const openModal = () => {
         setIsOpen(!isOpen);
+         if (!isOpen) {
+            setChapterName('');
+            setFilePath(null);
+            setDocument('');
+        }
     };
 
     return (
@@ -95,7 +92,16 @@ const AddChapter = ({documents} : {documents: Document[]}) => {
                     </div>
                     <div className="modal-action">
                         <button type="button" className="btn btn-ghost" onClick={openModal}>Close</button>
-                        <button type="submit" className="btn btn-primary">Save</button>
+                        <button type="submit" className={`btn btn-primary ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={loading}> {/* <--- Tambahkan kelas dan disabled */}
+                            {loading ? ( // <--- Conditional rendering untuk loading spinner
+                                <>
+                                    <span className="loading loading-spinner"></span>
+                                    Processing...
+                                </>
+                            ) : (
+                                'Save'
+                            )}
+                        </button>
                     </div>
                 </form>
             </div>
